@@ -45,7 +45,10 @@ public final class HttpHelper {
 
   private HttpHelper() {
   }
-  
+
+  /**
+   * Enumeration of supported HTTP content types
+   */
   public enum ContentType {
     /** HTML-like content type, including HTML, XHTML, etc. */
     HTML,
@@ -89,8 +92,7 @@ public final class HttpHelper {
       case XML:
         contentTypes = "application/xml,text/*,*/*";
         break;
-      case TEXT:
-      default:
+      default: // Includes TEXT
         contentTypes = "text/*,*/*";
     }
     return downloadViaHttp(uri, contentTypes, maxChars);
@@ -142,21 +144,11 @@ public final class HttpHelper {
   private static CharSequence consume(URLConnection connection, int maxChars) throws IOException {
     String encoding = getEncoding(connection);
     StringBuilder out = new StringBuilder();
-    Reader in = null;
-    try {
-      in = new InputStreamReader(connection.getInputStream(), encoding);
+    try (Reader in = new InputStreamReader(connection.getInputStream(), encoding)) {
       char[] buffer = new char[1024];
       int charsRead;
       while (out.length() < maxChars && (charsRead = in.read(buffer)) > 0) {
         out.append(buffer, 0, charsRead);
-      }
-    } finally {
-      if (in != null) {
-        try {
-          in.close();
-        } catch (IOException | NullPointerException ioe) {
-          // continue
-        }
       }
     }
     return out;
@@ -213,8 +205,8 @@ public final class HttpHelper {
   private static int safelyConnect(HttpURLConnection connection) throws IOException {
     try {
       connection.connect();
-    } catch (NullPointerException | IllegalArgumentException | IndexOutOfBoundsException | SecurityException e) {
-      // this is an Android bug: http://code.google.com/p/android/issues/detail?id=16895
+    } catch (RuntimeException e) {
+      // These are, generally, Android bugs
       throw new IOException(e);
     }
     try {

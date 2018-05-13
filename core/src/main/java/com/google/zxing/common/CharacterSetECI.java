@@ -78,7 +78,7 @@ public enum CharacterSetECI {
   CharacterSetECI(int value) {
     this(new int[] {value});
   }
-  
+
   CharacterSetECI(int value, String... otherEncodingNames) {
     this.values = new int[] {value};
     this.otherEncodingNames = otherEncodingNames;
@@ -95,7 +95,7 @@ public enum CharacterSetECI {
 
   /**
    * @param value character set ECI value
-   * @return {@link CharacterSetECI} representing ECI of given value, or null if it is legal but
+   * @return {@code CharacterSetECI} representing ECI of given value, or null if it is legal but
    *   unsupported
    * @throws FormatException if ECI value is invalid
    */

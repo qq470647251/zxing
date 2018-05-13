@@ -19,6 +19,8 @@ package com.google.zxing.client.result;
 import java.util.regex.Pattern;
 
 /**
+ * A simple result type encapsulating a URI that has no further interpretation.
+ *
  * @author Sean Owen
  */
 public final class URIParsedResult extends ParsedResult {
@@ -69,11 +71,9 @@ public final class URIParsedResult extends ParsedResult {
   private static String massageURI(String uri) {
     uri = uri.trim();
     int protocolEnd = uri.indexOf(':');
-    if (protocolEnd < 0) {
-      // No protocol, assume http
-      uri = "http://" + uri;
-    } else if (isColonFollowedByPortNumber(uri, protocolEnd)) {
-      // Found a colon, but it looks like it is after the host, so the protocol is still missing
+    if (protocolEnd < 0 || isColonFollowedByPortNumber(uri, protocolEnd)) {
+      // No protocol, or found a colon, but it looks like it is after the host, so the protocol is still missing,
+      // so assume http
       uri = "http://" + uri;
     }
     return uri;
